@@ -1,4 +1,3 @@
-from twisted.internet import reactor
 import scrapy
 import os; print(os.getcwd())
 from scrapy.spiders import CrawlSpider
@@ -6,10 +5,6 @@ from sparknotes.items import SparkItem
 from sparknotes.util.stringutil import StringUtil
 from sparknotes.util.xpathutil import XpathUtil
 from sparknotes.common.ConfigFiles import ConfigFiles
-from scrapy.crawler import CrawlerRunner
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-from scrapy.utils.log import configure_logging
 
 class SparknotesSpider(CrawlSpider):
     name = "sparknotes"
@@ -63,8 +58,3 @@ class SparknotesSpider(CrawlSpider):
         item['body'] = ''.join(item['body'])+''.join(slidebody)
         yield item
 
-configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
-runner = CrawlerRunner(get_project_settings())
-d = runner.crawl(SparknotesSpider)
-d.addBoth(lambda _: reactor.stop())
-reactor.run()

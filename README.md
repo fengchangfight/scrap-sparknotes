@@ -13,4 +13,4 @@ topics
 tags
 body
 
-运行方式: 直接运行SparknotesSpider.py
+运行方式: 直接运行main.py

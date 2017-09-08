@@ -9,7 +9,7 @@ class ConfigFiles:
     def config():
         config_file_path = ConfigFiles.config_file()
         config = ConfigParser.ConfigParser()
-        config.read("../../config/" + config_file_path)
+        config.read("../config/" + config_file_path)
         config = {
             'url': config.get("Mongo", "url"),
             'username': config.get("Mongo", "username"),
@@ -23,6 +23,6 @@ class ConfigFiles:
     @staticmethod
     def config_file():
         config = ConfigParser.ConfigParser()
-        config.read("../../config/environment.cfg")
+        config.read("../config/environment.cfg")
         config_file = config.get("Config", "configFile")
         return config_file
