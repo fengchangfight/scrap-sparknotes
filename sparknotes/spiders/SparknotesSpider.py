@@ -21,7 +21,7 @@ class SparknotesSpider(CrawlSpider):
             item = SparkItem()
             # get title, url, author, date, summary, header from within class (media-text previewWithImage)
             item['title'] = ''.join(StringUtil.get_first(cats.xpath('.//div[1]/h5[1]/a/text()').extract(), ""))
-            item['url'] = ''.join(cats.xpath('.//div[2]/a/@href').extract())
+            item['url'] = ''.join(cats.xpath('.//div[2]/a[last()]/@href').extract())
             item['author'] = ''.join(cats.xpath('.//h6/a/text()').extract())
             item['date'] = ''.join(cats.xpath('.//h6/span/text()').extract())
             item['summary'] = ''.join(cats.xpath('.//div[2]/text()').extract() + cats.xpath('.//div[2]/descendant::*/text()').extract())
@@ -62,8 +62,9 @@ class SparknotesSpider(CrawlSpider):
         item['body'] = ''.join(item['body'])+''.join(slidebody)
         yield item
 
-
+#text_file = open("output.txt", "w")
 process = CrawlerProcess(get_project_settings())
 # 'sparknotes' is the name of one of the spiders of the project.
 process.crawl('sparknotes')
 process.start() # the script will block here until the crawling is finished
+#text_file.close()
