@@ -1,3 +1,4 @@
+from twisted.internet import reactor
 import scrapy
 import os; print(os.getcwd())
 from scrapy.spiders import CrawlSpider
@@ -5,8 +6,11 @@ from sparknotes.items import SparkItem
 from sparknotes.util.stringutil import StringUtil
 from sparknotes.util.xpathutil import XpathUtil
 from sparknotes.common.ConfigFiles import ConfigFiles
+from scrapy.crawler import CrawlerRunner
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
 
-class BBCSpider(CrawlSpider):
+class SparknotesSpider(CrawlSpider):
     name = "sparknotes"
     config = ConfigFiles.config()
     start_urls = [config.get("scrapeUrl")]
@@ -54,10 +58,12 @@ class BBCSpider(CrawlSpider):
         item['tags'] = response.xpath('.//article/descendant::h6[2]/a/text()').extract()
         item['tags'] = ','.join(item['tags']);
         item['body'] = response.xpath(".//" + XpathUtil.xpath_for_class('copy') + '/descendant::*/text()').extract()
-        slidebody = response.xpath('//*[@id="slideText"]/p[1]/text()').extract()
+        slidebody = response.xpath('//*[@id="slideText"]/p/text()').extract()
         item['body'] = ''.join(item['body'])+''.join(slidebody)
-
-        print(item['body'])
-
-
         yield item
+
+
+process = CrawlerProcess(get_project_settings())
+# 'sparknotes' is the name of one of the spiders of the project.
+process.crawl('sparknotes')
+process.start() # the script will block here until the crawling is finished
