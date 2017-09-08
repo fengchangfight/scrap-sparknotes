@@ -12,3 +12,5 @@ header
 topics
 tags
 body
+
+运行方式: 直接运行SparknotesSpider.py
