@@ -9,6 +9,7 @@ from sparknotes.common.ConfigFiles import ConfigFiles
 from scrapy.crawler import CrawlerRunner
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
+from scrapy.utils.log import configure_logging
 
 class SparknotesSpider(CrawlSpider):
     name = "sparknotes"
@@ -62,9 +63,8 @@ class SparknotesSpider(CrawlSpider):
         item['body'] = ''.join(item['body'])+''.join(slidebody)
         yield item
 
-#text_file = open("output.txt", "w")
-process = CrawlerProcess(get_project_settings())
-# 'sparknotes' is the name of one of the spiders of the project.
-process.crawl('sparknotes')
-process.start() # the script will block here until the crawling is finished
-#text_file.close()
+configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
+runner = CrawlerRunner(get_project_settings())
+d = runner.crawl(SparknotesSpider)
+d.addBoth(lambda _: reactor.stop())
+reactor.run()
