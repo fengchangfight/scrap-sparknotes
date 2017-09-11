@@ -1,35 +1,55 @@
-from sparknotes.common.ConfigFiles import ConfigFiles
-from sparknotes.common.MongoUtils import MongoUtils
+import pymysql
+from sparknotes import settings
 
 
 class MongoWriterPipeline(object):
     # ==fc== init mongo client
     def __init__(self):
-        config = ConfigFiles.config()
-        self.client = MongoUtils.create_client_from_config(config)
-        self.db = self.client.sparknotes
-        self.bulk = self.db.articles.initialize_ordered_bulk_op()
+        self.connect = pymysql.connect(
+            host=settings.MYSQL_HOST,
+            db=settings.MYSQL_DBNAME,
+            user=settings.MYSQL_USER,
+            passwd=settings.MYSQL_PASSWD,
+            charset='utf8',
+            use_unicode=True)
+        self.cursor = self.connect.cursor()
 
     # ==fc== write into db article
     def process_item(self, article, spider):
-        stripped_article = {
-            "title": article["title"],
-            "url": article["url"],
-            "author": article["author"],
-            "date": article["date"],
-            "summary": article["summary"],
-            "header": article["header"],
-            "topics": article["topics"],
-            "tags": article["tags"],
-            "body": article["body"],
-        }
-
-        self.bulk.insert(stripped_article)
+        try:
+            self.cursor.execute(
+                """insert into articles(
+                   url,
+                   title,
+                   author,
+                   pub_date,
+                   summary,
+                   header,
+                   topics,
+                   tags, 
+                   body, 
+                   image_urls, 
+                   image_paths)
+                  value (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                (
+                  article['url'],
+                  article['title'],
+                  article['author'],
+                  article['pub_date'],
+                  article['summary'],
+                  article['header'],
+                  article['topics'],
+                  article['tags'],
+                  article['body'],
+                  ' '.join(article['image_urls']),
+                  ' '.join(article['image_paths'])
+                )
+            )
+        except Exception as error:
+            print(error)
+        self.connect.commit()
         return article
 
     # ==fc== execute and close connection to mongo
     def close_spider(self, spider):
-        result = self.bulk.execute()
-        print("Article write result:")
-        print(result)
-        self.client.close()
+        self.connect.close()

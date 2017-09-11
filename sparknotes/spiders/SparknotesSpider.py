@@ -9,7 +9,7 @@ from sparknotes.common.ConfigFiles import ConfigFiles
 class SparknotesSpider(CrawlSpider):
     name = "sparknotes"
     config = ConfigFiles.config()
-    start_urls = [config.get("scrapeUrl")]
+    start_urls = ['http://community.sparknotes.com/']
 
     def parse(self, response):
         categories = response.xpath("//" + XpathUtil.xpath_for_class('media-text previewWithImage'))
@@ -19,7 +19,7 @@ class SparknotesSpider(CrawlSpider):
             item['title'] = ''.join(StringUtil.get_first(cats.xpath('.//div[1]/h5[1]/a/text()').extract(), ""))
             item['url'] = ''.join(cats.xpath('.//div[2]/a[last()]/@href').extract())
             item['author'] = ''.join(cats.xpath('.//h6/a/text()').extract())
-            item['date'] = ''.join(cats.xpath('.//h6/span/text()').extract())
+            item['pub_date'] = ''.join(cats.xpath('.//h6/span/text()').extract())
             item['summary'] = ''.join(cats.xpath('.//div[2]/text()').extract() + cats.xpath('.//div[2]/descendant::*/text()').extract())
             item['header'] = ''.join(cats.xpath('.//h4/a/text()').extract())
             #request url from item url and parse the more detailed content
@@ -33,15 +33,9 @@ class SparknotesSpider(CrawlSpider):
 
         if next_page_url is not None:
             index = next_page_url.split("/")[-1]
-            if int(index)<10:
+            if int(index)<2:
                 next_page_url = response.urljoin(next_page_url)
                 yield scrapy.Request(response.urljoin(next_page_url))
-
-
-
-
-
-
 
     """
     parse the content in pages like this: http://www.bbc.com/news/world-australia-41104634
@@ -56,5 +50,9 @@ class SparknotesSpider(CrawlSpider):
         item['body'] = response.xpath(".//" + XpathUtil.xpath_for_class('copy') + '/descendant::*/text()').extract()
         slidebody = response.xpath('//*[@id="slideText"]/p/text()').extract()
         item['body'] = ''.join(item['body'])+''.join(slidebody)
+
+        item['image_urls'] = [
+            'http://img.sparknotes.com/content/sparklife/sparktalk/auntiesparknotesdrivinganxiety_MediumWide.jpg',
+            'http://img.sparknotes.com/content/sparklife/sparktalk/apr19essaytopicsforallbooksMAIN_LargeWide.jpg']
         yield item
 

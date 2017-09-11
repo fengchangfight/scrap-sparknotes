@@ -73,7 +73,8 @@ DOWNLOAD_DELAY=1
 # 'scrapymasters.spiders.IndexerPipeline.IndexerPipeline': 1
 
 ITEM_PIPELINES = {
-    'sparknotes.pipelines.MongoWriterPipeline.MongoWriterPipeline': 1
+    'sparknotes.pipelines.MongoWriterPipeline.MongoWriterPipeline': 2,
+    'sparknotes.pipelines.ImagesDownloadPipeline.ImagesDownloadPipeline': 1
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -94,3 +95,10 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR='httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES=[]
 #HTTPCACHE_STORAGE='scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+MYSQL_HOST = 'localhost'
+MYSQL_DBNAME = 'hillspider'
+MYSQL_USER = 'root'
+MYSQL_PASSWD = 'Passw0rd'
+
+IMAGES_STORE = '/Users/xiefengchang/test/images'

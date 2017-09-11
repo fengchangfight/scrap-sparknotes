@@ -6,10 +6,13 @@ class SparkItem(scrapy.Item):
     title = Field()
     url = Field()
     author = Field()
-    date = Field()
+    pub_date = Field()
     summary = Field()
     header = Field()
 
     topics = Field()
     tags = Field()
     body = Field()
+
+    image_urls = Field()
+    image_paths = Field()
