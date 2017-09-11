@@ -33,7 +33,7 @@ class SparknotesSpider(CrawlSpider):
 
         if next_page_url is not None:
             index = next_page_url.split("/")[-1]
-            if int(index)<10:
+            if int(index)<2:
                 next_page_url = response.urljoin(next_page_url)
                 yield scrapy.Request(response.urljoin(next_page_url))
 
@@ -56,5 +56,8 @@ class SparknotesSpider(CrawlSpider):
         item['body'] = response.xpath(".//" + XpathUtil.xpath_for_class('copy') + '/descendant::*/text()').extract()
         slidebody = response.xpath('//*[@id="slideText"]/p/text()').extract()
         item['body'] = ''.join(item['body'])+''.join(slidebody)
+
+        item['image_urls'] = ['http://img.sparknotes.com/content/sparklife/sparktalk/auntiesparknotesdrivinganxiety_MediumWide.jpg',
+                      'http://img.sparknotes.com/content/sparklife/sparktalk/apr19essaytopicsforallbooksMAIN_LargeWide.jpg']
         yield item
 

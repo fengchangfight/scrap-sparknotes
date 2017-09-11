@@ -13,3 +13,6 @@ class SparkItem(scrapy.Item):
     topics = Field()
     tags = Field()
     body = Field()
+
+    image_urls = Field()
+    image_paths = Field()
